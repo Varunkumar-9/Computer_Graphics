@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+
+<div>
+Line:&emsp;&emsp;
+X1: <input type="text" id="lx1"  size="4"> 
+Y1: <input type="text" id="ly1"  size="4">
+Z1: <input type="text" id="lz1"  size="4">
+&emsp;&emsp;&emsp;
+X2: <input type="text" id="lx2"  size="4"> 
+Y2: <input type="text" id="ly2"  size="4">
+Z2: <input type="text" id="lz2"  size="4">
+&emsp;&emsp;&emsp;
+<button onclick = "AnimateLine()" id="Button1" style="margin:0px 0px 0px 300px;">Animate </button>
+</div>
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute  vec4 vPosition;
+attribute  vec4 vColor;
+varying vec4 fcolor;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+void main() 
+{
+    gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+    fcolor = vColor;
+} 
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fcolor;
+
+void
+main()
+{
+    gl_FragColor = fcolor;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="ortho2.js"></script>
+
+<body>
+
+
+<canvas id="gl-canvas" width="768" height="768" style= "border: 1px solid blue">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+</body>
+</html>
