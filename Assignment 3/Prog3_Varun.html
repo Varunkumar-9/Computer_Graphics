@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="../CSS/mathcont.css" rel="stylesheet" type="text/css">
+<meta name="description" content="Canvas with rubber band selection box.">
+<meta name="keywords" content="canvas, rubber band, selection, save, screen, restore, HTML5">
+<title>Simple Rubberbanding Example.</title>
+<script src="https://cdn.jsdelivr.net/npm/mv.js@1.0.0/dist/mv.min.js"></script>
+<!-- <script type="text/javascript" src="main.js"></script> -->
+
+<script Language="JavaScript" >
+
+var canvas1, ctx1, canvas2, ctx2, is_down;
+//var xDown, yDown, xUp, yUp, x,y, coords;
+   
+function initialize() {
+    //Get the base layer canvas object
+    canvas1 = document.getElementById("layer1");
+    ctx1 = canvas1.getContext("2d");
+    ctx1.fillStyle = "blue";
+    ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+
+    //Get the top layer canvas object
+    canvas2 = document.getElementById("layer2");
+    ctx2 = canvas2.getContext("2d");
+    is_down = false;// mouse hasn't been pressed
+
+    shapeTypedropdown = document.getElementById("shape");
+    shape = shapeTypedropdown.options[shapeTypedropdown.selectedIndex].value;
+}
+
+function ShapeTransformation(xDown, yDown, xUp, yUp) {
+    switch (shape) {
+        case "Line":
+            ctx1.beginPath();
+            ctx1.moveTo(xDown, yDown);
+            ctx1.lineTo(xUp, yUp);
+            ctx1.stroke();
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            break;
+        case "Triangle":
+            ctx1.beginPath();
+            ctx1.moveTo(xDown, yDown);
+            ctx1.lineTo(xUp, yUp);
+            ctx1.lineTo(xDown + (xDown - xUp), yUp);
+            ctx1.closePath();
+            ctx1.stroke();
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            break;
+        case "Polygon":
+            ctx1.beginPath();
+            var sides = 6; 
+            var radius = Math.sqrt(Math.pow((xUp - xDown), 2) + Math.pow((yUp - yDown), 2)); // Radius of the polygon
+            var startX = xDown + radius;
+            var startY = yDown;
+            ctx1.moveTo(startX, startY);
+            for (var i = 1; i <= sides; i++) {
+                var currentX = xDown + radius * Math.cos(i * 2 * Math.PI / sides);
+                var currentY = yDown + radius * Math.sin(i * 2 * Math.PI / sides);
+                ctx1.lineTo(currentX, currentY);
+            }
+            ctx1.closePath();
+            ctx1.stroke();
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            break;
+        case "Circle":
+            var radius = Math.sqrt(Math.pow((xUp - xDown), 2) + Math.pow((yUp - yDown), 2));
+            ctx1.beginPath();
+            ctx1.arc(xDown, yDown, radius, 0, 2 * Math.PI);
+            ctx1.stroke();
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            break;
+        case "Rectangle":
+            ctx1.beginPath();
+            ctx1.rect(xDown, yDown, xUp - xDown, yUp - yDown);
+            ctx1.stroke();
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            break;
+        default:
+            break;
+    }
+}
+
+function mouse_down(event) {
+    xDown = event.clientX;
+    yDown = event.clientY;
+    is_down = true;
+    coords = "X: "+ x + " Y: " + y + " is_down = " + is_down;
+      document.getElementById("val1").innerHTML = coords;
+}
+
+function mouse_move(event) {
+
+  x = event.clientX;
+  y = event.clientY;
+
+  if(is_down)	{
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+    // elastic band
+    ctx2.strokeStyle = "yellow";
+    ctx2.strokeRect(xDown,yDown, x-xDown, y-yDown);
+  }
+
+  coords = "X: "+ x + " Y: " + y +" is_down = " + is_down;	
+  document.getElementById("val2").innerHTML = coords;
+}
+function mouse_up(event) {
+
+  xUp = event.clientX;
+  yUp = event.clientY;
+
+  is_down = false;
+
+  ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+  coords = "X: "+ xUp + " Y: " + yUp +" is_down = " + is_down;
+
+  document.getElementById("val3").innerHTML = coords;
+  ShapeTransformation(xDown, yDown, xUp, yUp);
+}      
+
+function ClearCanvas(){
+  ctx1.clearRect(0, 0, canvas2.width, canvas2.height);
+  ctx1.fillStyle = "blue";
+  ctx1.fillRect(0, 0, canvas2.width, canvas2.height);
+
+}
+  </script>
+
+</head>
+
+<BODY onLoad="initialize()" 
+	  onMouseDown="mouse_down(event)"   
+	  onMouseUp="mouse_up(event)"  
+	  onMouseMove="mouse_move(event)" ">
+
+<table border="1"><tr><td width="600" height="600" >
+        
+        <canvas id="layer1" style="z-index:1; position:absolute;left:0px;top:0px " width="600" height="600"   > Your browser doesn't support the canvas tag!</canvas>
+
+        <canvas id="layer2" style="z-index:1; position:absolute;left:0px;top:0px " width="600" height="600"   > Your browser doesn't support the canvas tag!</canvas>
+
+</td><td>
+
+<h1>Canvas with rubber band selection box.</h1>
+<label for="shape">Change type:</label>
+<select id="shape" onchange="shape = this.value;">
+  <option value="Line">Line</option>
+  <option value="Triangle">Triangle</option>
+  <option value="Polygon">Polygon</option>
+  <option value="Circle">Circle</option>
+  <option value="Rectangle">Rectangle</option>
+</select>
+</br>
+mouse_down:
+<p id="val1"></p>
+
+mouse_move:
+<p id="val2"></p>
+
+mouse_up:
+<p id="val3"></p>
+
+<button id="Clear" onclick="ClearCanvas()">Clear</button>
+
+
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
