@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body{
+            background-color: rgb(90, 90, 88);
+        }
+        	div {
+		margin: 20px auto;
+		padding: 10px;
+		background-color: rgb(90, 90, 88);
+		width: 80%;
+		text-align: center;
+	}
+
+	input[type="text"] {
+		padding: 5px;
+		margin: 5px;
+		border: 1px solid #ccc;
+		border-radius: 2px;
+	}
+
+	button {
+		padding: 5px 10px;
+		margin: 5px;
+		border: none;
+		border-radius: 3px;
+		background-color: #ffffff;
+		color: #050505;
+		font-size: 12px;
+		cursor: pointer;
+	}
+
+	canvas{
+display: block;
+margin: 0px auto;
+border: 1px solid #c5c5c5;
+background-color: #ffffff; 
+}
+</style>
+
+    </style>
+<body>
+
+x1:<input type="text" id="x1"  size="4"> &emsp;&emsp; 
+y1:<input type="text" id="y1"  size="4"> &emsp;&emsp; 
+x2:<input type="text" id="x2"  size="4"> &emsp;&emsp; 
+y2:<input type="text" id="y2"  size="4"> &emsp;&emsp; 
+
+<button onclick = "DDAline()" id="Button1">DDA Line </button>  &emsp;&emsp;  
+<button onclick = "Midpointline()" id="Button1">Mid-point Line </button>
+
+
+<br>
+<br>
+cx:<input type="text" id="cx1"  size="4"> &emsp;&emsp; 
+cy:<input type="text" id="cy1"  size="4"> &emsp;&emsp;
+r:<input type="text" id="r"  size="4"> &emsp;&emsp;
+<button onclick = "MidCircle()" id="Button3">Mid-point Circle </button>   &emsp;&emsp;  
+
+<br>
+<br>
+cx:<input type="text" id="cx2"  size="4"> &emsp;&emsp; 
+cy:<input type="text" id="cy2"  size="4"> &emsp;&emsp;
+a:<input type="text" id="a"  size="4"> &emsp;&emsp;
+b:<input type="text" id="b"  size="4"> &emsp;&emsp;
+<button onclick = "Mid_point_Ellipse()" id="Button4">Mid-point Ellipse </button> 
+
+<br>
+<br>
+
+px1:<input type="text" id="px1"  size="4"> &emsp;&emsp;
+py1:<input type="text" id="py1"  size="4"> &emsp;&emsp;
+px2:<input type="text" id="px2"  size="4"> &emsp;&emsp;
+py2:<input type="text" id="py2"  size="4"> &emsp;&emsp;
+rx1:<input type="text" id="rx1"  size="4"> &emsp;&emsp;
+ry1:<input type="text" id="ry1"  size="4"> &emsp;&emsp;
+rx2:<input type="text" id="rx2"  size="4"> &emsp;&emsp;
+ry2:<input type="text" id="ry2"  size="4"> &emsp;&emsp;
+
+<button onclick = "Bezier_curve()" id="Button5">Bezier Curve </button>   &emsp;&emsp;
+<button onclick = "Spline_curve()" id="Button6">Spline Curve </button>   &emsp;&emsp;
+<button onclick = "Hermite_curve()" id="Button7">Hermite Curve </button>   &emsp;&emsp;
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick = "reset()">Reset Values</button></p>
+
+
+</div>
+
+<br>
+
+<div style = "text-align:center;">
+<canvas id="myCanvas" width="700" height="600"  style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+function Midpointline(X1, Y1, X2, Y2)
+{
+
+	X1 = parseFloat(document.getElementById("x1").value);
+	Y1 = parseFloat(document.getElementById("y1").value);
+	X2 = parseFloat(document.getElementById("x2").value);
+	Y2 = parseFloat(document.getElementById("y2").value);	
+
+
+	let dx = X2 - X1;
+	let dy = Y2 - Y1;
+
+
+	let d = dy - (dx/2);
+	let x = X1, y = Y1;
+
+	PRvar_TXY(x, y);
+
+	while (x < X2)
+	{
+		x++;
+
+		if (d < 0)
+			d = d + dy;
+
+		else
+		{
+			d += (dy - dx);
+			y++;
+		}
+
+		PRvar_TXY(x ,y);
+	}
+}
+
+function DDAline() 
+{ 
+	x0 = parseFloat(document.getElementById("x1").value);
+	y0 = parseFloat(document.getElementById("y1").value);
+	x1 = parseFloat(document.getElementById("x2").value);
+	y1 = parseFloat(document.getElementById("y2").value);
+	
+    var x;
+
+    var dy = y1 - y0;
+    var dx = x1 - x0;
+    var m = dy / dx;
+    var y = y0;
+
+    for (x = x0; x <= x1; x++) {
+        PRvar_TXY( x, Math.round(y));
+        y = y + m;
+    }
+} 
+
+function EllipsePoints(x, y)
+{
+    PRvar_TXY( x, y);
+    PRvar_TXY( -x, y);
+    PRvar_TXY( x, -y);
+    PRvar_TXY( -x, -y);
+}
+
+function Mid_point_Ellipse(a, b) 
+{
+	a = parseFloat(document.getElementById("a").value);
+	b = parseFloat(document.getElementById("b").value);
+	cx = parseFloat(document.getElementById("cx2").value);
+	cy = parseFloat(document.getElementById("cy2").value);
+	var c=100;
+    var x = 0+cx;
+    var y = b+cy;
+    
+	for (var i=0.0; i<=360; i+=0.25) {
+      var j = i * Math.PI / 180;
+      var y = cy+b*Math.sin(j);
+      var x = cx+a*Math.cos(j);
+    
+       
+        PRvar_TXY(x, y);
+    }
+}
+
+function MidCircle(c, radius) 
+{ 
+	r = parseFloat(document.getElementById("r").value);
+	cx = parseFloat(document.getElementById("cx1").value);
+	cy = parseFloat(document.getElementById("cy1").value);
+
+
+
+    var x = 0+cx;
+    var y = radius+cy;
+    
+	for (var i=0.0; i<=360; i+=0.25) {
+      var j = i * Math.PI / 180;
+      var x = cx+r*Math.sin(j);
+      var y = cy+r*Math.cos(j);
+    
+       
+        PRvar_TXY(x, y);
+    }
+} 
+
+function Hermite_curve()
+{
+
+	x1 = parseFloat(document.getElementById("px1").value);
+	y1 = parseFloat(document.getElementById("py1").value);
+	x3 = parseFloat(document.getElementById("rx1").value);
+	y3 = parseFloat(document.getElementById("ry1").value);
+	
+	x4 = parseFloat(document.getElementById("rx2").value);
+	y4 = parseFloat(document.getElementById("ry2").value);
+	x2 = parseFloat(document.getElementById("px2").value);
+	y2 = parseFloat(document.getElementById("py2").value);
+	
+	n=3000;
+
+
+    var i;
+    var x, y, z;
+    var delta = 1.0/n;
+    var t;
+
+    x = x1;
+    y = y1;
+    t = 0.0;
+    PRvar_TXY(x,y);
+    for (i = 0; i < n; i++) {
+        t += delta;
+        var t2 = t * t;
+        var t3 = t2 * t;
+
+        x = ((2*t3)-(3*t2)+1)*x1 + ((-2*t3)+(3*t2))*x4 + (t3-(2*t2)+t)*x2 + (t3-t2)*x3;
+        y = ((2*t3)-(3*t2)+1)*y1 + ((-2*t3)+(3*t2))*y4 + (t3-(2*t2)+t)*y2 + (t3-t2)*y3;
+        PRvar_TXY(x,y);
+    }
+}
+
+
+function Spline_curve()
+{
+	x1 = parseFloat(document.getElementById("px1").value);
+	y1 = parseFloat(document.getElementById("py1").value);
+	x2 = parseFloat(document.getElementById("rx1").value);
+	y2 = parseFloat(document.getElementById("ry1").value);
+	
+	x3 = parseFloat(document.getElementById("rx2").value);
+	y3 = parseFloat(document.getElementById("ry2").value);
+	x4 = parseFloat(document.getElementById("px2").value);
+	y4 = parseFloat(document.getElementById("py2").value);
+	
+	n=3000;
+	
+    var i;
+    var x, y, z;
+    var delta = 1.0/n;
+    var t;
+
+
+    x = x1;
+    y = y1;
+    t = 0.0;
+    for (i = 0; i < n; i++) {
+        t += delta;
+        var t2 = t * t;
+        var t3 = t2 * t;
+
+        x = (((1-t3)/6)*x1)+(((3*t3-6*t2+4)/6)*x2)+(((-3*t3+3*t2+3*t+1)/6)*x3)+((t3/6)*x4);
+        y = (((1-t3)/6)*y1)+(((3*t3-6*t2+4)/6)*y3)+(((-3*t3+3*t2+3*t+1)/6)*y3)+((t3/6)*y4);
+        
+        PRvar_TXY(x,y);
+    }
+}	
+
+	
+function Bezier_curve()
+{
+
+	x1 = parseFloat(document.getElementById("px1").value);
+	y1 = parseFloat(document.getElementById("py1").value);
+	x2 = parseFloat(document.getElementById("rx1").value);
+	y2 = parseFloat(document.getElementById("ry1").value);
+	
+	x3 = parseFloat(document.getElementById("rx2").value);
+	y3 = parseFloat(document.getElementById("ry2").value);
+	x4 = parseFloat(document.getElementById("px2").value);
+	y4 = parseFloat(document.getElementById("py2").value);
+	
+	n = 3000;
+	
+    var i;
+    var x, y, z;
+    var delta = 1.0/n;
+    var t;
+
+    x = x1;
+    y = y1;
+    t = 0.0;
+    
+    for (i = 0; i < n; i++) {
+        t += delta;
+        var t2 = t * t;
+        var t3 = t2 * t;
+           
+        var q1=(1-t);
+        var q2=q1*q1;
+        var q3=q2*q1;
+        x = q3*x1 + (3*t*q2)*x2 + (3*t2*q1)*x3 + t3*x4;
+        y = q3*y1 + (3*t*q2)*y2 + (3*t2*q1)*y3 + t3*y4;
+        PRvar_TXY(x,y);
+    }
+}
+
+function reset(){
+	location.reload();
+  }
+
+
+function PRvar_TXY(x,y){
+	ctx.fillRect(x+300,600-(y+300),1,1);
+}
+
+
+</script>
+
+</body>
+</html>
+
